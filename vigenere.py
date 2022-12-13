@@ -1,8 +1,5 @@
 """ minha versao """
 
-
-from sklearn import preprocessing
-
 # tamanho do alfabeto
 alphabet_len = 26
 
@@ -67,21 +64,34 @@ decifrar mensagem sem chave
 """
 
 def decrypt(cipher_text):
-    coincidence = []
+    coincidence = list()
 
     for i in range(len(cipher_text)):
+        i += 1
         count = 0
+
         for j in range(len(cipher_text) - i):
             if cipher_text[j] == cipher_text[j + i]:
                 count += 1
-        
+
         coincidence.append(count)
 
     print(f'coincidence = {coincidence}')
 
-    normalized_coincidence = preprocessing.normalize([coincidence])
+    # distribuicao normal
+    normalized_coincidence = [float(i)/max(coincidence) for i in coincidence]
 
     print(f'normalized coincidence = {normalized_coincidence}')
+
+    # index dos maiores valores de acordo com a distribuicao normal
+    largest_20_percent = list()
+
+    for i in range(len(normalized_coincidence)):
+        if normalized_coincidence[i] > 0.5: # > 0.75, > 0.8 ???
+            largest_20_percent.append(i)
+
+    print(f'largest_20_percent = {largest_20_percent}')
+
 
 """
 programa principal
