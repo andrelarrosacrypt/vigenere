@@ -1,5 +1,8 @@
 """ minha versao """
 
+
+from sklearn import preprocessing
+
 # tamanho do alfabeto
 alphabet_len = 26
 
@@ -60,9 +63,31 @@ def cipher_decipher(text, key, mode):
     return new_text
 
 """
+decifrar mensagem sem chave
+"""
+
+def decrypt(cipher_text):
+    coincidence = []
+
+    for i in range(len(cipher_text)):
+        count = 0
+        for j in range(len(cipher_text) - i):
+            if cipher_text[j] == cipher_text[j + i]:
+                count += 1
+        
+        coincidence.append(count)
+
+    print(f'coincidence = {coincidence}')
+
+    normalized_coincidence = preprocessing.normalize([coincidence])
+
+    print(f'normalized coincidence = {normalized_coincidence}')
+
+"""
 programa principal
 """
 
+"""
 message = input('Insira mensagem que deseja cifrar: ')
 key = input('Insira chave de cifracao (somente letras) ')
 
@@ -71,3 +96,9 @@ decipher_message = cipher_decipher(cipher_message, key, mode = 'decipher')
 
 print(f'mensagem cifrada: {cipher_message}')
 print(f'mensagem decifrada: {decipher_message}')
+"""
+
+
+cipher_text = input('Insira mensagem que deseja decifrar: ')
+
+decrypt(cipher_text)
