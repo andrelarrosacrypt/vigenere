@@ -1,6 +1,12 @@
+import text_processing as tp
+import string
+from sys import maxsize
+from constants import IC_ENG
+
 # tamanho do alfabeto
 alphabet_len = 26
 n_factors = 20
+MAX_KEY_LENGTH = 4
 
 """
 faz a cifracao ou decifracao dependendo so modo (mode) escolhido
@@ -146,11 +152,56 @@ def tuples(ciphertext):
     #print(f'distance = {distance}')
 
 
+def ic(letter_count, text_size):
+    n = 0
+    for l in letter_count:
+        n += letter_count[l] * (letter_count[l] - 1)
+    
+    d = (text_size * (text_size-1))/alphabet_len
+
+    return n/d
+
+
+def index_coincidence(ciphertext):
+    groups = []
+    columns = []
+    minimum = maxsize
+    key_length = 0
+
+    for possible_key_length in range(2, MAX_KEY_LENGTH):
+        assumed_key_length = possible_key_length
+        groups = tp.get_groups(ciphertext, assumed_key_length)
+        print(f'groups = {groups}')
+        columns = tp.get_columns(groups)
+        #print(f'columns = {columns}')
+
+        index = 0
+
+        for c in columns:
+            letter_count = tp.get_letter_count(c)
+            #print(f'letter count = {letter_count}')
+            index += ic(letter_count, len(ciphertext))
+            #print(f'ic = {ic(letter_count, len(ciphertext))}')
+
+        avarege_index = index/assumed_key_length
+
+        print(f'avarege index = {avarege_index}')
+
+        if (IC_ENG - avarege_index) < minimum:
+            minimum = IC_ENG - avarege_index
+            key_length = assumed_key_length
+        
+    return key_length
+
+
 """
 descobrir o comprimento da palavra chave usando o metodo de Kasiski
 """
+
 def keyword_lenght(ciphertext):
-    tuples(ciphertext)
+    #tuples(ciphertext)
+
+    return index_coincidence(ciphertext)
 
 
 """
@@ -158,7 +209,9 @@ decifrar mensagem sem chave
 """
 
 def decrypt(ciphertext):
-    keyword_lenght(ciphertext)
+    kl = keyword_lenght(ciphertext)
+
+    print(f'key length = {kl}')
 
 
 """
