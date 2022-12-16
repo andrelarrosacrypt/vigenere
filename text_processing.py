@@ -1,4 +1,6 @@
-from collections import Counter as c
+from collections import Counter
+import string
+from constants import EN_REL_FREQ
 
 def get_groups(text, group_size):
     groups = []
@@ -22,22 +24,34 @@ def get_columns(groups):
     group_size = len(groups[0])
     columns = []
 
-    print(f'g size = {group_size}')
+    #print(f'g size = {group_size}')
 
     for l in range(group_size):
         c = ''
         for g in range(len(groups)):
-            print(f'g[{g}][{l}] = {groups[g][l]}')
+            #print(f'g[{g}][{l}] = {groups[g][l]}')
             c += groups[g][l]
         columns.append(c)
     
     return columns
 
+
+        #    for index, letter in enumerate(string.ascii_uppercase):
+        #letter_counts[letter] = text_upper.count(letter)
+
 def get_letter_count(column):
     uniform_column = column.lower()
-    letter_count = c()
+    letter_count = Counter()
 
-    for letter in uniform_column:
-        letter_count[letter] += 1
+    for index, letter in enumerate(string.ascii_lowercase):
+        letter_count[letter] = uniform_column.count(letter)
+
+    return letter_count
+
+def get_exp_letter_count(text_len):
+    letter_count = Counter()
+
+    for index, letter in enumerate(string.ascii_lowercase):
+        letter_count[letter] = text_len*EN_REL_FREQ[letter]
 
     return letter_count
