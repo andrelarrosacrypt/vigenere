@@ -7,17 +7,17 @@ def Cipher_decipher_aux(text_char, key_char, mode):
     if text_char.isalpha():
         # posicao da primeira letra e usada como referencial para descobrir o caracter cifrada 
         if text_char.islower():
-            m_first_letter = ord('a')
+            t_first_letter = ord('a')
         else:
-            m_first_letter = ord('A')
+            t_first_letter = ord('A')
         
         if key_char.islower():
             k_first_letter = ord('a')
         else:
             k_first_letter = ord('A')
 
-        # posicoes relativas a primeira letra
-        text_char_pos = ord(text_char) - m_first_letter
+        # posicoes relativas a primeira letra, maiuscula ou minuscula
+        text_char_pos = ord(text_char) - t_first_letter
         key_char_pos = ord(key_char) - k_first_letter
 
         # posicao no alfabeto do novo caracter para cifracao ou decifracao
@@ -32,7 +32,7 @@ def Cipher_decipher_aux(text_char, key_char, mode):
         return (text_char,0)
 
     # retorna o caracter relativo a nova posicao
-    new_text_char = chr(new_text_char_pos + m_first_letter)
+    new_text_char = chr(new_text_char_pos + t_first_letter)
 
     # avanca nos acaracteres da chave
     return (new_text_char,1)
@@ -48,10 +48,10 @@ def Cipher_decipher(text, key, mode):
     for text_char in text:
         # loop dos caracteres da chave
         key_char = key[i%len(key)]
-        text_code = Cipher_decipher_aux(text_char, key_char, mode)
+        ciphered_text_char = Cipher_decipher_aux(text_char, key_char, mode)
         # primeira parte da tupla tem o caracter
-        new_text += text_code[0]
+        new_text += ciphered_text_char[0]
         # segunda parte da tupla tem o codigo que indica se e preciso ou nao avancar nos caracteres da chave
-        i += text_code[1]
+        i += ciphered_text_char[1]
 
     return new_text

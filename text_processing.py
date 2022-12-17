@@ -14,13 +14,23 @@ TODO:   acho que posso tranformar o get-groups e o get_columns em uma unica func
 """
 divide o texto em grupos de tamanho group_size
 """
+# TODO: ESTOU PEGANDO OS ' ' ESPACOS EM BRANCO, TEM QUE TIRAR
 def Get_groups(text, group_size):
+    # retira caracteres nao alfabeticos do texto
+    new_text = ''
+
+    for i in range(len(text)):
+        if text[i].isalpha():
+            new_text += text[i]
+
+    #print(f'new text = {new_text}')
+
     groups = []
     
-    for i in range(0, len(text), group_size):
-        if (i + group_size) > len(text):
-            dif = (i + group_size) - (len(text))
-            g = text[i : len(text)]
+    for i in range(0, len(new_text), group_size):
+        if (i + group_size) > len(new_text):
+            dif = (i + group_size) - (len(new_text))
+            g = new_text[i : len(new_text)]
             
             # completa o ultimo grupo com espacoes vazios
             for j in range(dif):
@@ -28,7 +38,7 @@ def Get_groups(text, group_size):
             
             groups.append(g)
         else:
-            groups.append(text[i : i + group_size])
+            groups.append(new_text[i : i + group_size])
     
     return groups
 
@@ -62,6 +72,9 @@ def Get_letter_count(column):
 
     return letter_count
 
+"""
+conta quantas vezes cada letra deveria aparecer no texto seguindo a distribuicao de frequencia normal da lingua inglesa
+"""
 def Get_exp_letter_count(text_len):
     letter_count = Counter()
 
@@ -69,3 +82,7 @@ def Get_exp_letter_count(text_len):
         letter_count[letter] = text_len * FREQ_ENG[letter]
 
     return letter_count
+
+"""
+conta quantas vezes cada letra deveria aparecer no texto seguindo a distribuicao de frequencia normal da lingua portuguesa
+"""

@@ -95,6 +95,7 @@ def tuples(ciphertext):
 programa principal
 """
 
+"""
 # cifracao e decifracao com chave
 message = input('Insira mensagem que deseja cifrar: ')
 key = input('Insira chave de cifracao (somente letras) ')
@@ -104,6 +105,7 @@ deciphered_message = Cipher_decipher(enciphered_message, key, mode = 'decipher')
 
 print(f'\nmensagem cifrada: {enciphered_message}')
 print(f'mensagem decifrada: {deciphered_message}')
+"""
 
 # decifracao (sem chave)
 ciphertext = input('\nInsira mensagem que deseja decifrar: ')

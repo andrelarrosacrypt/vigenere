@@ -1,15 +1,17 @@
 """
 constantes
 """
+#N_FACTOR = 20
+
 # indice de coincidencia na lingua inglesa
-IC_ENG = 0.067
+IC_ENG = 0.0656
+# TODO: in eng = 0.067 u 1.73 ou 0.0332692307692
 # indice de coincidencia na lingua portuguesa
 # IC_PORT = ?
 # tamanho do alfabeto
 ALPHABET_LEN = 26
-#N_FACTOR = 20
 # tamanho maximo esperado do chave
-MAX_KEY_LENGTH = 10
+MAX_KEY_LENGTH = 2
 
 # frequencia de aparicoes das letras do alfabeto em um texto em ingles
 FREQ_ENG = {'a': 0.08167,

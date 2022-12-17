@@ -75,16 +75,34 @@ def Key(ciphertext, key_length):
 
 """
 calcula o indice de coincidencia do grupo
+https://en.wikipedia.org/wiki/Index_of_coincidence
 """
 def Index_coincidence(letter_count, text_size):
+    
+    """
     numerator = 0
     # para cada letra pertencente ao grupo
     for l in letter_count:
         numerator += letter_count[l] * (letter_count[l] - 1)
 
-    denominator = ( text_size * (text_size-1) )/ALPHABET_LEN
-    
+    # (ALPHABET_LEN * 2) porque temos letras maiusculas e minusculas (a - z) (A - Z)
+    denominator = ( text_size * (text_size-1) ) / (ALPHABET_LEN * 2)
+
     index_coincidence = numerator/denominator
+
+    return index_coincidence
+    """
+
+    total_sum = 0
+    # para cada letra pertencente ao grupo
+    for l in letter_count:
+        total_sum += (letter_count[l] / text_size) * ( (letter_count[l] - 1) / (text_size - 1) )
+
+    #print(f'total sum = {total_sum}')
+
+    # TODO: (ALPHABET_LEN * 2) ou ALPHABET_LEN
+    # (ALPHABET_LEN * 2) porque temos letras maiusculas e minusculas (a - z) (A - Z)
+    index_coincidence = total_sum * ALPHABET_LEN
 
     return index_coincidence
 
@@ -99,31 +117,37 @@ def Keyword_lenght(ciphertext):
     key_length = 0
 
     # para cada possivel comprimento de chave
-    for possible_key_length in range(2, MAX_KEY_LENGTH):
+    for possible_key_length in range(1, MAX_KEY_LENGTH+1):
+        print(f'\npossible key length = {possible_key_length}')
         groups = tp.Get_groups(ciphertext, possible_key_length)
         #print(f'groups = {groups}')
         columns = tp.Get_columns(groups)
-        #print(f'columns = {columns}')
+        #print(f'\ncolumns = {columns}')
 
-        index = 0
-
+        index_total = 0
+        letter_count = Counter()
         # para cada coluna
         for c in columns:
             # quantidade de aparicoes de cada letra
+            #letter_count += tp.Get_letter_count(c)
             letter_count = tp.Get_letter_count(c)
-            #print(f'letter count = {letter_count}')
             # indice de coincidencia do grupo
-            index += Index_coincidence(letter_count, len(ciphertext))
-            #print(f'ic = {ic(letter_count, len(ciphertext))}')
+            #print(f'letter count = {letter_count}')
+            #print(f'ic = {Index_coincidence(letter_count, len(ciphertext))}')
+            index_total += Index_coincidence(letter_count, len(ciphertext))
+            
+        #print(f'index total = {index_total}')
 
         # indice de coincidencia medio do grupo
-        avarege_index = index/len(columns)
+        avarege_index = index_total/len(columns)
 
-        #print(f'avarege index = {avarege_index}')
+        print(f'avarege index = {avarege_index}')
+        #print(f'IC_ENG - avarege_index = {abs(IC_ENG - avarege_index)}')
+        #print(f'kl  {possible_key_length}: IC_ENG - avarege_index = {abs(IC_ENG - avarege_index)}')
 
-        # menor indice de coincidencia medio
-        if (IC_ENG - avarege_index) < minimum:
-            minimum = IC_ENG - avarege_index
+        # indice de coincidencia medio mais proximo do indice da lingua inglesa
+        if (abs(IC_ENG - avarege_index)) < minimum:
+            minimum = abs(IC_ENG - avarege_index)
             key_length = possible_key_length
         
     return key_length
@@ -135,11 +159,13 @@ decifrar mensagem (sem chave)
 def Decrypt(ciphertext):
     # comprimento da chave
     key_length = Keyword_lenght(ciphertext)
+    #key_length = 12
 
-    # chave de cifracao
+    print(f'\nkey length = {key_length}')
+
+    # recupera a chave de cifracao
     key = Key(ciphertext, key_length)
 
-    #print(f'key length = {kl}')
     #print(f'key  = {key}')
 
     # decifra com a chave descoberta
