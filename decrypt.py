@@ -3,7 +3,7 @@ imports
 """
 from cipher_decipher import Cipher_decipher
 from sys import maxsize
-from constants import ALPHABET_LEN, IC_ENG, MAX_KEY_LENGTH
+from constants import IC_ENG, IC_PORT, MAX_KEY_LENGTH
 import text_processing as tp
 from collections import Counter
 import string
@@ -12,9 +12,9 @@ import string
 calcula a distribuicao qui-quadrado para cada possivel decifracao
 https://en.wikipedia.org/wiki/Chi-squared_distribution
 """
-def Chi_square(text, possible_decyphered_text):
+def Chi_square(text, possible_decyphered_text, mode):
     text_len = len(text)
-    expected_letters_count = tp.Get_exp_letter_count(text_len)
+    expected_letters_count = tp.Get_exp_letter_count(text_len, mode)
     actual_letters_count = tp.Get_letter_count(possible_decyphered_text)
 
     #print(f'exp count = {expected_letters_count}')
@@ -38,7 +38,7 @@ def Chi_square(text, possible_decyphered_text):
 """
 descobre a letra que foi usada para cifrar o grupo
 """
-def Key_letter(column):
+def Key_letter(column, mode):
     #print(f'columns = {columns}')
     chi_square = Counter()
 
@@ -47,7 +47,7 @@ def Key_letter(column):
         # coluna possivelmente decifrada
         possible_decyphered_column = Cipher_decipher(column, letter, 'decypher')
         # lista com todos ao chi_square para todas as letras (a - z)
-        chi_square[letter] = Chi_square(column, possible_decyphered_column)
+        chi_square[letter] = Chi_square(column, possible_decyphered_column, mode)
 
     #print(f'chi square = {chi_square}')
     #print(f'chi square sorted = {sorted(chi_square, key=chi_square.get, reverse=False)}')
@@ -62,14 +62,14 @@ def Key_letter(column):
 """
 controi a chave que decifra o texto
 """
-def Key(ciphertext, key_length):
+def Key(ciphertext, key_length, mode):
     groups = tp.Get_groups(ciphertext, key_length)
     columns = tp.Get_columns(groups)
 
     key = ''
     # para cada coluna
     for c in columns:
-        key += Key_letter(c)
+        key += Key_letter(c, mode)
 
     return key
 
@@ -125,7 +125,7 @@ def Index_coincidence(letter_count, text_size):
 """
 descobre o comprimento da palavra chave usando indice de coincidencia
 """
-def Keyword_lenght(ciphertext):
+def Keyword_lenght(ciphertext, mode):
     groups = []
     columns = []
     minimum = maxsize
@@ -161,10 +161,16 @@ def Keyword_lenght(ciphertext):
         #print(f'IC_ENG - avarege_index = {abs(IC_ENG - avarege_index)}')
         #print(f'kl  {possible_key_length}: IC_ENG - avarege_index = {abs(IC_ENG - avarege_index)}')
 
-        # indice de coincidencia medio mais proximo do indice da lingua inglesa
-        if (abs(IC_ENG - avarege_index)) < minimum:
-            minimum = abs(IC_ENG - avarege_index)
-            key_length = possible_key_length
+        # indice de coincidencia medio deve ser o mais proximo do indice da lingua inglesa
+        if mode == 'english':
+            if (abs(IC_ENG - avarege_index)) < minimum:
+                minimum = abs(IC_ENG - avarege_index)
+                key_length = possible_key_length
+        # indice de coincidencia medio mais proximo do indice da lingua portuguesa
+        else:
+            if (abs(IC_PORT - avarege_index)) < minimum:
+                minimum = abs(IC_PORT - avarege_index)
+                key_length = possible_key_length
         
     return key_length
 
@@ -172,17 +178,17 @@ def Keyword_lenght(ciphertext):
 """
 decifrar mensagem (sem chave)
 """
-def Decrypt(ciphertext):
+def Decrypt(ciphertext, mode):
     # comprimento da chave
-    key_length = Keyword_lenght(ciphertext.lower())
+    key_length = Keyword_lenght(ciphertext.lower(), mode)
     #key_length = 7
 
     #print(f'\nkey length = {key_length}')
 
     # recupera a chave de cifracao
-    key = Key(ciphertext, key_length)
+    key = Key(ciphertext, key_length, mode)
 
-    print(f'\nchave descoberta  = {key}')
+    print(f'\nCHAVE DESCOBERTA  = {key}')
 
     # decifra com a chave descoberta
     decrypted_ciphertext = Cipher_decipher(ciphertext, key, 'decypher')

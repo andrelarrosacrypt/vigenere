@@ -3,7 +3,7 @@ imports
 """
 from collections import Counter
 import string
-from constants import FREQ_ENG
+from constants import FREQ_ENG, FREQ_PORT
 
 """
 TODO:   acho que posso tranformar o get-groups e o get_columns em uma unica funcao get_mod_key_length
@@ -75,11 +75,15 @@ def Get_letter_count(column):
 """
 conta quantas vezes cada letra deveria aparecer no texto seguindo a distribuicao de frequencia normal da lingua inglesa
 """
-def Get_exp_letter_count(text_len):
+def Get_exp_letter_count(text_len, mode):
     letter_count = Counter()
 
-    for index, letter in enumerate(string.ascii_lowercase):
-        letter_count[letter] = text_len * FREQ_ENG[letter]
+    if mode == 'english':
+        for index, letter in enumerate(string.ascii_lowercase):
+            letter_count[letter] = text_len * FREQ_ENG[letter]
+    else:
+        for index, letter in enumerate(string.ascii_lowercase):
+            letter_count[letter] = text_len * FREQ_PORT[letter]
 
     return letter_count
 
