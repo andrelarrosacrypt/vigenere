@@ -1,3 +1,13 @@
+"""
+    UnB
+    CIC0201 - Seguranca Computacional - 2022/2
+    Andre Larrosa Chimpliganond
+    190010321
+"""
+
+"""
+imports
+"""
 from constants import ALPHABET_LEN
 
 """
@@ -7,18 +17,18 @@ def Cipher_decipher_aux(text_char, key_char, mode):
     if text_char.isalpha():
         # posicao da primeira letra e usada como referencial para descobrir o caracter cifrada 
         if text_char.islower():
-            t_first_letter = ord('a')
+            text_first_letter = ord('a')
         else:
-            t_first_letter = ord('A')
+            text_first_letter = ord('A')
         
         if key_char.islower():
-            k_first_letter = ord('a')
+            key_first_letter = ord('a')
         else:
-            k_first_letter = ord('A')
+            key_first_letter = ord('A')
 
         # posicoes relativas a primeira letra, maiuscula ou minuscula
-        text_char_pos = ord(text_char) - t_first_letter
-        key_char_pos = ord(key_char) - k_first_letter
+        text_char_pos = ord(text_char) - text_first_letter
+        key_char_pos = ord(key_char) - key_first_letter
 
         # posicao no alfabeto do novo caracter para cifracao ou decifracao
         if mode == 'cipher':
@@ -32,14 +42,14 @@ def Cipher_decipher_aux(text_char, key_char, mode):
         return (text_char,0)
 
     # retorna o caracter relativo a nova posicao
-    new_text_char = chr(new_text_char_pos + t_first_letter)
+    new_text_char = chr(new_text_char_pos + text_first_letter)
 
     # avanca nos acaracteres da chave
     return (new_text_char,1)
 
 
 """
-gerencia a funcao de cifracao e decifracao (cipher_decipher_aux)
+gerencia a funcao de cifracao e decifracao (Cipher_decipher_aux)
 """
 def Cipher_decipher(text, key, mode):
     new_text = ''

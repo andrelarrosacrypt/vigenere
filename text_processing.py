@@ -1,4 +1,11 @@
 """
+    UnB
+    CIC0201 - Seguranca Computacional - 2022/2
+    Andre Larrosa Chimpliganond
+    190010321
+"""
+
+"""
 imports
 """
 from collections import Counter
@@ -6,15 +13,8 @@ import string
 from constants import FREQ_ENG, FREQ_PORT
 
 """
-TODO:   acho que posso tranformar o get-groups e o get_columns em uma unica funcao get_mod_key_length
-        so preciso do grupos separado de acordo com n (n = text_index % key_length)
-"""
-
-
-"""
 divide o texto em grupos de tamanho group_size
 """
-# TODO: ESTOU PEGANDO OS ' ' ESPACOS EM BRANCO, TEM QUE TIRAR
 def Get_groups(text, group_size):
     # retira caracteres nao alfabeticos do texto
     new_text = ''
@@ -22,8 +22,6 @@ def Get_groups(text, group_size):
     for i in range(len(text)):
         if text[i].isalpha():
             new_text += text[i]
-
-    #print(f'new text = {new_text}')
 
     groups = []
     
@@ -40,21 +38,22 @@ def Get_groups(text, group_size):
         else:
             groups.append(new_text[i : i + group_size])
     
-    return groups
+    columns = Get_columns(groups)
+
+    return columns
 
 """
- a coluna c de cada grupo
+agrupa os elementos dos grupos com base em sua coluna
+ex: grupos = (abcd, efgh)
+    colunas = ((a,e), (b,f), (c,g), (d,h))
 """
 def Get_columns(groups):
     group_size = len(groups[0])
     columns = []
 
-    #print(f'g size = {group_size}')
-
     for l in range(group_size):
         c = ''
         for g in range(len(groups)):
-            #print(f'g[{g}][{l}] = {groups[g][l]}')
             c += groups[g][l]
         columns.append(c)
     
@@ -73,7 +72,7 @@ def Get_letter_count(column):
     return letter_count
 
 """
-conta quantas vezes cada letra deveria aparecer no texto seguindo a distribuicao de frequencia normal da lingua inglesa
+conta quantas vezes cada letra deveria aparecer no texto seguindo a distribuicao de frequencia normal da lingua (ingles ou portugues)
 """
 def Get_exp_letter_count(text_len, mode):
     letter_count = Counter()
@@ -86,7 +85,3 @@ def Get_exp_letter_count(text_len, mode):
             letter_count[letter] = text_len * FREQ_PORT[letter]
 
     return letter_count
-
-"""
-conta quantas vezes cada letra deveria aparecer no texto seguindo a distribuicao de frequencia normal da lingua portuguesa
-"""

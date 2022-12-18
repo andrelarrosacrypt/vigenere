@@ -1,16 +1,24 @@
 """
+    UnB
+    CIC0201 - Seguranca Computacional - 2022/2
+    Andre Larrosa Chimpliganond
+    190010321
+"""
+
+"""
 constantes
 """
-#N_FACTOR = 20
+# tamanho do alfabeto
+ALPHABET_LEN = 26
+
+# tamanho maximo esperado do chave
+MAX_KEY_LENGTH = 20
 
 # indice de coincidencia na lingua inglesa
 IC_ENG = 0.0665
+
 # indice de coincidencia na lingua portuguesa
 IC_PORT = 0.0746
-# tamanho do alfabeto
-ALPHABET_LEN = 26
-# tamanho maximo esperado do chave
-MAX_KEY_LENGTH = 20
 
 # frequencia de aparicoes das letras do alfabeto em um texto em ingles
 FREQ_ENG = {    'a': 0.08167,

@@ -1,4 +1,11 @@
 """
+    UnB
+    CIC0201 - Seguranca Computacional - 2022/2
+    Andre Larrosa Chimpliganond
+    190010321
+"""
+
+"""
 imports
 """
 from cipher_decipher import Cipher_decipher
@@ -9,7 +16,7 @@ from collections import Counter
 import string
 
 """
-calcula a distribuicao qui-quadrado para cada possivel decifracao
+calcula a distribuicao qui quadrado para cada possivel decifracao
 https://en.wikipedia.org/wiki/Chi-squared_distribution
 """
 def Chi_square(text, possible_decyphered_text, mode):
@@ -17,11 +24,9 @@ def Chi_square(text, possible_decyphered_text, mode):
     expected_letters_count = tp.Get_exp_letter_count(text_len, mode)
     actual_letters_count = tp.Get_letter_count(possible_decyphered_text)
 
-    #print(f'exp count = {expected_letters_count}')
-    #print(f'act count = {actual_letters_count}')
-
     normalized_error = Counter()
 
+    # calcula o erro normalizado entre as quantidades esperadas de cada letra e a quantidade real
     for l in actual_letters_count:
         # error = actual_letters_count - expected_letters_count
         # sq_error = error^2
@@ -30,46 +35,36 @@ def Chi_square(text, possible_decyphered_text, mode):
     # soma de todos os erros quadraticos normalizados
     chi_square = sum(normalized_error.values())
 
-    #print(f'norm err = {normalized_error}')
-    #print(f'chi sq = {chi_square}')
-
     return chi_square
 
 """
 descobre a letra que foi usada para cifrar o grupo
 """
-def Key_letter(column, mode):
-    #print(f'columns = {columns}')
+def Key_letter(group, mode):
     chi_square = Counter()
 
-    # verificar dentre as letras do alfabeto (a - z) qual a que cifrou esse grupo
+    # dentre todas as letras do alfabeto, qual provavelmente cifrou esse grupo
     for index, letter in enumerate(string.ascii_lowercase):
-        # coluna possivelmente decifrada
-        possible_decyphered_column = Cipher_decipher(column, letter, 'decypher')
-        # lista com todos ao chi_square para todas as letras (a - z)
-        chi_square[letter] = Chi_square(column, possible_decyphered_column, mode)
-
-    #print(f'chi square = {chi_square}')
-    #print(f'chi square sorted = {sorted(chi_square, key=chi_square.get, reverse=False)}')
+        # grupo possivelmente decifrado
+        possible_decyphered_group = Cipher_decipher(group, letter, 'decypher')
+        # lista com todos ao chi_square para todas as letras do alfabeto
+        chi_square[letter] = Chi_square(group, possible_decyphered_group, mode)
     
-    # menor distribuicao qui_quadrado e a letra que realmente cifra/decifra o grupo
+    # menor distribuicao qui quadrado e a letra que provavelmente cifrou o grupo
     key_letter = sorted(chi_square, key=chi_square.get, reverse=False)[0]
-
-    #print(f'key letter = {key_letter}')
 
     return key_letter
 
 """
-controi a chave que decifra o texto
+recupera a chave que decifra o texto
 """
 def Key(ciphertext, key_length, mode):
     groups = tp.Get_groups(ciphertext, key_length)
-    columns = tp.Get_columns(groups)
 
     key = ''
-    # para cada coluna
-    for c in columns:
-        key += Key_letter(c, mode)
+    # recupera letra por letra
+    for g in groups:
+        key += Key_letter(g, mode)
 
     return key
 
@@ -78,88 +73,44 @@ calcula o indice de coincidencia do grupo
 https://en.wikipedia.org/wiki/Index_of_coincidence
 """
 def Index_coincidence(letter_count, text_size):
-    # os caracteres da cifra foram transformados em caracteres minusculo, logo temos um alfabeto com 26 caracteres distintos
-    #print(f'letter count = {letter_count}')
-    
-    """
-    index_coincidence = 0
-
-    for l in letter_count:
-        # soma dos quadrados das frequencias das letra
-        index_coincidence += pow( (letter_count[l]/text_size), 2 )
-
-    # indice de coincidencia normalizado
-    return index_coincidence * ALPHABET_LEN
-    """
-
-    
     num = 0
+
     # para cada letra pertencente ao grupo
     for l in letter_count:
-        #print(f'letter count[{l}] = {letter_count[l]}')
         num += letter_count[l] * (letter_count[l] - 1)
 
     den = text_size * (text_size-1)
 
-    index_coincidence = num/den
+    if den == 0:
+        index_coincidence = num
+    else:
+        index_coincidence = num/den
 
     return index_coincidence
-    
 
-    """
-    total_sum = 0
-    # para cada letra pertencente ao grupo
-    for l in letter_count:
-        total_sum += (letter_count[l] / text_size) * ( (letter_count[l] - 1) / (text_size - 1) )
-
-    #print(f'total sum = {total_sum}')
-
-    # (ALPHABET_LEN * 2) porque temos letras maiusculas e minusculas (a - z) (A - Z)
-    index_coincidence = total_sum * ALPHABET_LEN
-
-    return index_coincidence
-    """
-    
-
-    
 """
 descobre o comprimento da palavra chave usando indice de coincidencia
 """
 def Keyword_lenght(ciphertext, mode):
     groups = []
-    columns = []
     minimum = maxsize
     key_length = 0
 
-    # para cada possivel comprimento de chave
+    # descobre o comprimento mais provavel da chave
     for possible_key_length in range(1, MAX_KEY_LENGTH+1):
-        #print(f'\npossible key length = {possible_key_length}')
         groups = tp.Get_groups(ciphertext, possible_key_length)
-        #print(f'groups = {groups}')
-        columns = tp.Get_columns(groups)
-        #print(f'\ncolumns = {columns}')
-
         index_total = 0
         letter_count = Counter()
-        # para cada coluna
-        for c in columns:
-            # quantidade de aparicoes de cada letra
-            #letter_count += tp.Get_letter_count(c)
-            letter_count = tp.Get_letter_count(c)
-            # indice de coincidencia do grupo
-            #print(f'letter count = {letter_count}')
-            #print(f'ic de uma coluna = {Index_coincidence(letter_count, len(ciphertext))}')
-            #index_total += Index_coincidence(letter_count, len(ciphertext))
-            index_total += Index_coincidence(letter_count, len(c))
-            
-        #print(f'index total = {index_total}')
+
+        # para cada grupo
+        for g in groups:
+            # numero de aparicoes de cada letra no grupo
+            letter_count = tp.Get_letter_count(g)
+            # indice de coincidencia total dos grupos
+            index_total += Index_coincidence(letter_count, len(g))
 
         # indice de coincidencia medio do grupo
-        avarege_index = index_total/len(columns)
-
-        #print(f'avarege index = {avarege_index}')
-        #print(f'IC_ENG - avarege_index = {abs(IC_ENG - avarege_index)}')
-        #print(f'kl  {possible_key_length}: IC_ENG - avarege_index = {abs(IC_ENG - avarege_index)}')
+        avarege_index = index_total/len(groups)
 
         # indice de coincidencia medio deve ser o mais proximo do indice da lingua inglesa
         if mode == 'english':
@@ -174,16 +125,12 @@ def Keyword_lenght(ciphertext, mode):
         
     return key_length
 
-
 """
-decifrar mensagem (sem chave)
+gerencia as etapadas de decifracao da mensagem
 """
 def Decrypt(ciphertext, mode):
     # comprimento da chave
     key_length = Keyword_lenght(ciphertext.lower(), mode)
-    #key_length = 7
-
-    #print(f'\nkey length = {key_length}')
 
     # recupera a chave de cifracao
     key = Key(ciphertext, key_length, mode)
